@@ -1,3 +1,4 @@
+// Package main serves the Local Billing System HTTP API and embedded React frontend.
 package main
 
 import (
@@ -19,15 +20,15 @@ type spaHandler struct {
 }
 
 func (h *spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	// Comprobar si el archivo existe
+	// Check if requested file exists in static FS
 	path := strings.TrimPrefix(r.URL.Path, "/")
 	if path == "" {
 		path = "index.html"
 	}
-	
+
 	_, err := fs.Stat(h.staticFS, path)
 	if os.IsNotExist(err) {
-		// Fallback a index.html
+		// Fallback to index.html for client-side routing
 		r.URL.Path = "/"
 	}
 
@@ -35,43 +36,51 @@ func (h *spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	fmt.Println("Facturacion Local - Iniciando Servidor")
+	fmt.Println("Local Billing System - Starting Server")
 
-	// Inicializar Base de Datos
-	db, err := storage.InitDB("facturacion.db")
+	// Resolve database path
+	dbPath := os.Getenv("DB_PATH")
+	if dbPath == "" {
+		dbPath = "facturacion.db"
+	}
+
+	// Initialize SQLite Database
+	db, err := storage.InitDB(dbPath)
 	if err != nil {
-		log.Fatalf("Error inicializando la base de datos: %v", err)
+		log.Fatalf("Error initializing database: %v", err)
 	}
 
 	mux := http.NewServeMux()
 
-	// 1. Configurar la API
+	// 1. API Health endpoint
 	mux.HandleFunc("/api/status", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"status":"ok"}`))
 	})
-	
-	// Registrar las rutas de la API (invoices, clients, etc)
+
+	// Register API endpoints (clients, invoices, etc.)
 	handlers.RegisterRoutes(mux, db)
 
-	// 2. Configurar el Frontend (React SPA)
-	// Extraer el subdirectorio "dist"
+	// 2. Embedded React SPA Frontend
 	distFS, err := fs.Sub(frontend.FS, "dist")
 	if err != nil {
-		log.Fatal("Error cargando archivos estáticos:", err)
+		log.Fatal("Error loading embedded static assets:", err)
 	}
 
 	spa := &spaHandler{
 		staticFS:   distFS,
 		fileServer: http.FileServer(http.FS(distFS)),
 	}
-	
-	// Todo lo que no sea /api/ se delega a la SPA
+
+	// Delegate non-API routes to SPA handler
 	mux.Handle("/", spa)
 
-	port := "8080"
-	fmt.Printf("Servidor escuchando en http://localhost:%s\n", port)
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+	fmt.Printf("Server listening on http://localhost:%s\n", port)
 	if err := http.ListenAndServe(":"+port, mux); err != nil {
-		log.Fatal("Error iniciando servidor:", err)
+		log.Fatal("Error starting server:", err)
 	}
 }

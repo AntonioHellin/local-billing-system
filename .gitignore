@@ -1,0 +1,45 @@
+# Binaries and executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+
+# SQLite databases & lock files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+facturacion.db
+
+# Exports & generated artifacts
+exports/
+BillingExports/
+*.pdf
+
+# Frontend build & dependencies
+frontend/node_modules/
+frontend/dist/*
+!frontend/dist/index.html
+frontend/.vite/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# IDE & Editor configurations
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.swp
+*.swo
+
+# Operating System files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
