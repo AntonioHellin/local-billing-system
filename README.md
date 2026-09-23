@@ -8,11 +8,6 @@ A lightweight, standalone desktop invoicing and billing application built with a
 
 **Local Billing System** provides private, local-first invoicing management for freelancers and small businesses. The application embeds the compiled React single-page frontend directly into the Go executable binary, requiring no external web server or cloud dependencies to run.
 
-### Repository Naming Analysis
-- **Recommended Repository Name**: `local-billing-system`
-- **Naming Formula**: **Formula A** (`[domain/product]-[core-function]`)
-- **Rationale**: Replaces the Spanish identifier `facturacion-local` with a clean kebab-case name specifying domain (`local-billing`) and core function (`system`).
-
 ---
 
 ## Features
