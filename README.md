@@ -70,7 +70,3 @@ Create a `.env` file based on `.env.example` to customize runtime settings:
 - **Cross-Platform Path Resolution**: Avoids hardcoded Windows paths (`C:\...`), resolving user directories safely with permission checks.
 
 ---
-
-## License
-
-Proprietary. All rights reserved. Not licensed for redistribution, public sublicensing, or resale.
